@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- springmvc的配置文件 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+  <!--** ========================================================================================= **-->
+  <!--** 设置springmvc扫描包，springmvc在spring之前加载，如果springmvc中扫描了某包，spring配置文件中，就不要再设置该包的     **-->
+  <!--** 扫描，api为程序中的controller层，是springmvc控制的分发层，     **-->
+  <!--** ========================================================================================= **-->
+  <context:component-scan base-package="com.jcci.portal" />
+  <aop:aspectj-autoproxy proxy-target-class="true"/>
+  <!--** ========================================================================================= **-->
+  <!--** 简写形式，自动注册DefaultAnnotationHandlerMapping与AnnotationMethodHandlerAdapter和其他常用解析器，是     **-->
+  <!--** springmvc中完成注解，路径解析，分发等相关操作的必要组件。与context:component搭配使用，context负责扫描注解注册组件       **-->
+  <!--** mvc:annotation-driven启用注解驱动，并注册解析器组件到bean工厂中，用来处理context:component中已经注册的组件 。        **-->
+  <!--** ========================================================================================= **-->
+  <!-- <mvc:annotation-driven validator="validator"> -->
+  <mvc:annotation-driven>
+    <mvc:argument-resolvers>
+      <bean class="com.jcci.component.ReadSessionResolver"/>
+      <bean class="com.jcci.component.WebPathResolver"/>
+    </mvc:argument-resolvers>
+  </mvc:annotation-driven>
+  <mvc:default-servlet-handler/>
+  <!--** ========================================================================================= **-->
+  <!--** 向spring注册了AutowiredAnnotationBeanPostProcessor、CommonAnnotationBeanPostProcessor、                   **-->
+  <!--** PersistenceAnnotationBeanPostProcessor 以及 RequiredAnnotationBeanPostProcessor四个组件 。                **-->
+  <!--** AutowiredAnnotationBeanPostProcessor使得spring能认出@Autowired注解                                                                              **-->
+  <!--** CommonAnnotationBeanPostProcessor使得spring能认出@ Resource、@ PostConstruct、@ PreDestroy注解     **-->
+  <!--** PersistenceAnnotationBeanPostProcessor使得spring能认出@PersistenceContext注解                                                **-->
+  <!--** RequiredAnnotationBeanPostProcessor使得spring能认出Required注解                                                                                       **-->
+  <!--** 如不使用此方式，可单独配置 ，方式如下：                                                                                                                                                                               **-->
+  <!--** <bean class="org.springframework.beans.factory.annotation. AutowiredAnnotationBeanPost    **-->
+  <!--** Processor "/>等                                                                                                                                                                                                                **-->
+  <!--** 如使用了 <context:component-scan/>方式扫描包，则可以省略该组件的声明，因为 <context:component-scan/>      **-->
+  <!--** 隐式的包含了<context:annotation-config />的功能。                                                                                                                                  **-->
+  <!--** ========================================================================================= **-->
+  <!-- <context:annotation-config /> -->
+  <!--** ========================================================================================= **-->
+  <!--** 使用spring的配置自动完成创建代理织入切面的工作。                                                                                                                                                        **-->
+  <!--** ========================================================================================= **-->
+  <!--** ========================================================================================= **-->
+  <!--** 配置SpringMVC的资源目录，让其不被dispatcher拦截器拦截。                                                                                                                                **-->
+  <!--** 将视图渲染到/WEB-RES/page/<method返回值>.jsp中。                                                                                                                                    **-->
+  <!--** ========================================================================================= **-->
+  <mvc:resources mapping="/WEB-RES/css/**" location="/WEB-RES/css/"/>
+  <mvc:resources mapping="/WEB-RES/js/**" location="/WEB-RES/js/"/>
+  <mvc:resources mapping="/WEB-RES/font/**" location="/WEB-RES/font/"/>
+  <mvc:resources mapping="/WEB-RES/img/**" location="/WEB-RES/img/"/>
+  <!-- <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+    <property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+    <property name="validationMessageSource" ref="messageSource" />
+  </bean>
+  <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>classpath:message</value>
+        <value>classpath:org/hibernate/validator/ValidationMessages</value>
+      </list>
+    </property>
+    <property name="fallbackToSystemLocale" value="false"/>
+    <property name="useCodeAsDefaultMessage" value="true"/>
+    <property name="defaultEncoding" value="UTF-8"/>
+    <property name="cacheSeconds" value="120"/>
+  </bean> -->
+  
+  	<!-- <mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/mobile" />
+			<mvc:mapping path="/customer" />
+			<bean class="com.jcci.portal.customer.ModileInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors> -->
+  
+  <!-- 配置多文件上传的决策器，用于配合jquery file upload做文件上传使用。 -->
+  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="defaultEncoding" value="UTF-8" />
+    <property name="maxUploadSize" value="104857600"/>
+    <property name="maxInMemorySize" value="4096"/>
+    <property name="uploadTempDir" value="WEB-RES/upload"/>
+  </bean>
+</beans>

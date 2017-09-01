@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jcci.repository.CarWheelInfoMapper">
+  <!---->
+  <sql id="column4CarWheelInfo">
+    
+  </sql>
+  
+  <resultMap type="CarWheelInfo" id="map4CarWheelInfo">
+  </resultMap>
+ 
+  <!--读取车轮毅信息-->
+  <select id="readCarWheelInfo" parameterType="String" resultMap="map4CarWheelInfo">
+    
+  </select>
+  
+  <!--读取车轮毅信息条数-->
+  <select id="readCarWheelInfoCount"  resultType="Long">
+	
+  </select>
+  
+ 
+  
+  <!--删除车漆信息-->
+  <delete id="deleteCarWheelInfo" parameterType="Long">
+   
+  </delete>
+  
+  <!--创建车轮毅信息-->
+  <insert id="createCarWheelInfo" parameterType="CarWheelInfo" useGeneratedKeys="true" keyProperty="carwheelinfo.carId">
+   
+  </insert>
+  
+   
+  <!--更新车轮毅信息-->
+  <update id="updateCarWheelInfo" parameterType="CarWheelInfo">
+    
+  </update>
+  
+</mapper>

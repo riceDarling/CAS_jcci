@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration>
+<configuration scan="true" scanPeriod="30 seconds">
+  <conversionRule conversionWord="colorlevel"
+    converterClass="unicorn.project.log.ColorLevelCompositeConverter" />
+  <conversionRule conversionWord="bold"
+    converterClass="unicorn.project.log.BoldCompositeConverter" />
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.out</target>
+    <withJansi>true</withJansi>
+    <encoder>
+      <pattern><![CDATA[%d{HH:mm:ss.SSS} [%-10.10thread] %-5level %40.40(%logger{0}.%method:%L) $ %msg%n]]></pattern>
+    </encoder>
+    <filter class="unicorn.project.log.OutFilter" />
+  </appender>
+  <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.err</target>
+    <withJansi>true</withJansi>
+    <encoder>
+      <pattern><![CDATA[%d{HH:mm:ss.SSS} [%-10.10thread] %-5level %40.40(%logger{0}.%method:%L) $ %msg%n]]></pattern>
+    </encoder>
+    <filter class="unicorn.project.log.ErrFilter" />
+  </appender>
+  <!-- 以日期为文件夹在项目内生成日志压缩包，并且每个日志文件最大5MB -->
+  <appender name="STDFILE"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${USER_HOME}/${FILE_NAME}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${USER_HOME}/${byDay}/${FILE_NAME}-${byDay}-%i.log.zip
+      </fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>10</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy
+      class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>5MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+  <root>
+    <level value="DEBUG" />
+    <appender-ref ref="STDERR" />
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

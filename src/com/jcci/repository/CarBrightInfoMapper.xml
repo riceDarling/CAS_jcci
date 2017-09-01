@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jcci.repository.CarBrightInfoMapper">
+  <!---->
+  <sql id="column4CarBrightInfo">
+    
+  </sql>
+  
+  <resultMap type="CarBrightInfo" id="map4CarBrightInfo">
+  </resultMap>
+ 
+  <!--读取车亮点信息-->
+  <select id="readCarBrightInfo" parameterType="String" resultMap="map4CarBrightInfo">
+    
+  </select>
+  
+  <!--读取车亮点信息条数-->
+  <select id="readCarBrightInfoCount"  resultType="Long">
+	
+  </select>
+  
+ 
+  
+  <!--删除车漆信息-->
+  <delete id="deleteCarBrightInfo" parameterType="Long">
+   
+  </delete>
+  
+  <!--创建车亮点信息-->
+  <insert id="createCarBrightInfo" parameterType="CarBrightInfo" useGeneratedKeys="true" keyProperty="carwheelinfo.carId">
+   
+  </insert>
+  
+   
+  <!--更新车亮点信息-->
+  <update id="updateCarBrightInfo" parameterType="CarBrightInfo">
+    
+  </update>
+  
+</mapper>

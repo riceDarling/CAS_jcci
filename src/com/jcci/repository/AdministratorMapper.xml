@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jcci.repository.AdministratorMapper">
+  <!---->
+  <sql id="column4Administrator">
+    admin.admin_nID adminId,
+    admin.admin_nType adminType,
+    admin.admin_cCode adminCode,
+    admin.admin_cPwd adminPwd,
+    admin.admin_cPhone adminPhone
+  </sql>
+  
+  <resultMap type="Administrator" id="map4Administrator">
+    <id column="adminId" property="adminId" jdbcType="INTEGER" javaType="Long"/>
+    <result column="adminType" property="adminType" jdbcType="INTEGER" javaType="Integer"/>
+    <result column="adminCode" property="adminCode" jdbcType="VARCHAR" javaType="String"/>
+    <result column="adminPwd" property="adminPwd" jdbcType="VARCHAR" javaType="String"/>
+    <result column="adminPhone" property="adminPhone" jdbcType="VARCHAR" javaType="String"/>
+  </resultMap>
+ 
+  <!--使用管理员的登录账号读取数据库中对应的内容-->
+  <select id="readAdministratorByCode" parameterType="String" resultMap="map4Administrator">
+    SELECT
+      <include refid="column4Administrator" />
+    FROM T_Admin admin
+    WHERE admin.admin_cCode = #{admin_code};
+  </select>
+  
+</mapper>

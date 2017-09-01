@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- spring的配置文件 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:cache="http://www.springframework.org/schema/cache"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+  http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+  <!--** =========================================================================================== **-->
+  <!--** spring的包扫描。**-->
+  <!--** =========================================================================================== **-->
+  <context:component-scan base-package="com.jcci.service"/>
+  <context:component-scan base-package="com.jcci.repository"/>
+  <context:component-scan base-package="com.jcci.component"/>
+  <context:component-scan base-package="unicorn.project.advice"/>
+  <context:component-scan base-package="unicorn.project.log"/>
+  <context:component-scan base-package="unicorn.project.security"/>
+  <context:component-scan base-package="unicorn.project.context"/>
+ 
+  
+  <!--** =========================================================================================== **-->
+  <!--** 创建tomcat数据源，spring加载此bean之后会自动读tomcat所创建的JNDI数据源。**-->
+  <!--** =========================================================================================== **-->
+  <context:property-placeholder location="classpath:db.properties"/>
+  <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <!--基本属性 url、user、password。-->
+    <property name="username" value="${jdbc.user}"/>
+    <property name="password" value="${jdbc.password}"/>
+    <property name="driverClassName" value="${jdbc.driverClass}"/>
+    <property name="url" value="${jdbc.jdbcUrl}"/>
+    <!--配置初始化大小、最小、最大。-->
+    <property name="initialSize" value="10"/>
+    <property name="minIdle" value="10"/>
+    <property name="maxActive" value="30"/>
+    <!--配置获取连接等待超时的时间。-->
+    <property name="maxWait" value="60000"/>
+    <!--配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒。-->
+    <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+    <!--配置一个连接在池中最小生存的时间，单位是毫秒。-->
+    <property name="minEvictableIdleTimeMillis" value="300000"/>
+    <property name="removeAbandonedTimeout" value="1800" />
+    <property name="validationQuery" value="SELECT COUNT(1) FROM T_CarInfo"/>
+    <property name="testWhileIdle" value="true"/>
+    <property name="testOnBorrow" value="false"/>
+<!--     <property name="testOnReturn" value="false"/> -->
+    <!--打开PSCache，并且指定每个连接上PSCache的大小。-->
+    <property name="poolPreparedStatements" value="true"/>
+    <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
+    <!--配置监控统计拦截的filters，去掉后监控界面sql无法统计。-->
+    <property name="filters" value="stat"/>
+    <property name="proxyFilters">
+      <list>
+        <ref bean="logFilter" /> 
+      </list>
+    </property>
+    
+  </bean>
+    
+  <bean id="logFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter"> 
+    <property name="statementExecutableSqlLogEnable" value="false" /> 
+  </bean>
+  
+  <!--** =========================================================================================== **-->
+  <!--** 创建SqlSessionFactory，同时指定数据源 ，使用mapperLocations设置mybatis的mapper文件的存放位置，并且指定类别名。**-->
+  <!--** dataSource为SqlSessionFactoryBean的数据源，本例使用druid数据库连接池作为数据源。**-->
+  <!--** mapperLocations为mybatis的mapper文件存放路径，也可以使用configLocation设置mybatis的独立配置文件。**-->
+  <!--** typeAliasesPackage为mybatis的类别名，它一般对应我们的实体类所在的包，这个时候会自动取对应包中不包括包名的简单类名作为包括包名的别名，-->
+  <!--多个package之间可以用逗号或者分号等来进行分隔。**-->
+  <!--** 一般情况下如果设置了configLocation则mybatis的mapper文件路径，类别名等内容要在mabatis-config.xml中设置，使用**-->
+  <!--** mapperLocations和typeAliasesPackage方式则是其简化的形式.**-->
+  <!--** =========================================================================================== **-->
+  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="druidDataSource"/>
+    <property name="mapperLocations" value="classpath:com/jcci/repository/*Mapper.xml"/>
+    <property name="typeAliasesPackage" value="com.jcci.pojo"/>
+  </bean>
+  <!--** ============================================================================================= **-->
+  <!--** 配置mybatis的MapperScannerConfigurer，它将会查找类路径下的 映射器并自动将它们创建成MapperFactoryBeans      **-->
+  <!--** basePackage属性是映射器文件的基本包路径，可以使用逗号或者分好设置多个包路径.                                  **-->
+  <!--** ============================================================================================= **-->
+  <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    <property name="basePackage" value="com.jcci.repository"/>
+  </bean>
+  <!--** ============================================================================================== **-->
+  <!--** 配置mybatis的事务管理器。声明 DataSourceTransactionManager组件，并传入datasource.                       **-->
+  <!--** ============================================================================================== **-->
+  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="druidDataSource"/>
+  </bean>
+  <!--** =============================================================================================== **-->
+  <!--** 向spring声明一个事务管理器 transactionManager，使用注解方式管理事务，使用此方法的话bean的创建一定要在spring中，而不   **-->
+  <!--** 能在springmvc中扫描。否则会引起事务控制不起作用的问题.                                                    **-->
+  <!--** =============================================================================================== **-->
+  <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+  <!--** =============================================================================================== **-->
+  <!--** 向spring声明EhCache缓存，并设定配置文件位置.                                                           **-->
+  <!--** =============================================================================================== **-->
+  <cache:annotation-driven cache-manager="ehcacheCacheManager" />
+  <bean id="ehcacheCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="cacheManager"/>
+  <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+    <property name="configLocation" value="classpath:ehcache-config.xml" />
+  </bean>
+  
+  
+  
+ 
+  <bean id="jsonMessageConverter"  class="org.springframework.amqp.support.converter.Jackson2JsonMessageConverter" />
+ 
+ 
+</beans>

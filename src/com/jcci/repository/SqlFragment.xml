@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jcci.repository.SqlFragment">
+  <!--分页的代码片段-->
+  <sql id="paging">
+    <if test="paging != null">
+      LIMIT #{paging.startRow},#{paging.pageSize}
+    </if>
+  </sql>
+  <!--用于statement-->
+  <sql id="paging4stmt">
+    <if test="paging != null">
+      LIMIT ${paging.startRow},${paging.pageSize}
+    </if>
+  </sql>
+</mapper>

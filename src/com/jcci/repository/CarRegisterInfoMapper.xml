@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jcci.repository.CarRegisterInfoMapper">
+  <!---->
+  <sql id="column4CarRegisterInfo">
+    carinfo.car_nID  carId,
+    carinfo.car_cNAME  carName,
+    carinfo.car_cBRAND  carBrand,
+    carinfo.car_cVERSION  carVersion,
+    carinfo.car_cSDK_VERSION  carSdkVersion,
+    carinfo.car_dUPDATATIME  carUpdateTime,
+    carinfo.car_cDOENLOAD_BG_IMG  carDoenLoadBgImg,
+    carinfo.car_cDOENLOAD_SPEAK  carDoenLoadSpeak
+  </sql>
+  
+  <resultMap type="CarRegisterInfo" id="map4CarRegisterInfo">
+    <id column="carId" property="carId" jdbcType="INTEGER" javaType="Long"/>
+    <result column="carName" property="carName" jdbcType="VARCHAR" javaType="String"/>
+    <result column="carBrand" property="carBrand" jdbcType="VARCHAR" javaType="String"/>
+    <result column="carVersion" property="carVersion" jdbcType="VARCHAR" javaType="String"/>
+    <result column="carSdkVersion" property="carSdkVersion" jdbcType="VARCHAR" javaType="String"/>
+    <result column="carUpdateTime" property="carUpdateTime" jdbcType="TIMESTAMP" javaType="String"/>
+    <result column="carDoenLoadBgImg" property="carDoenLoadBgImg" jdbcType="VARCHAR" javaType="String"/>
+    <result column="carDoenLoadSpeak" property="carDoenLoadSpeak" jdbcType="VARCHAR" javaType="String"/>
+  </resultMap>
+ 
+  <!--分页读取车辆登记信息-->
+  <select id="readCarRegisterInfo" parameterType="String" resultMap="map4CarRegisterInfo">
+    select
+      	<include refid="column4CarRegisterInfo" />
+    from 
+    	T_carinfo carinfo
+   	<if test="paging != null">
+     	<include refid="com.jcci.repository.SqlFragment.paging"/>
+   	</if>
+    ;
+  </select>
+  
+  <!--读取车辆登记信息条数-->
+  <select id="readCarRegisterInfoCount"  resultType="Long">
+	select
+      	IFNULL( count(1) , 0 )
+    from
+    	T_carinfo
+    ;
+  </select>
+  
+ 
+  
+  <!--删除车辆登记信息-->
+  <delete id="deleteCarRegisterInfo" parameterType="Long">
+    delete from T_carinfo where car_nID=#{carId};
+  </delete>
+  
+  <!--创建车辆登记信息-->
+  <insert id="createCarRegisterInfo" parameterType="CarRegisterInfo" useGeneratedKeys="true" keyProperty="carinfo.carId">
+    insert into T_carinfo
+    <set>
+      <if test="carinfo.carName != null">car_cNAME = #{carinfo.carName},</if>
+      <if test="carinfo.carBrand != null">car_cBRAND = #{carinfo.carBrand},</if>
+      <if test="carinfo.carVersion != null">car_cVERSION = #{carinfo.carVersion},</if>
+      <if test="carinfo.carSdkVersion != null">car_cSDK_VERSION = #{carinfo.carSdkVersion},</if>
+      <if test="carinfo.carUpdateTime != null">car_dUPDATATIME = #{carinfo.carUpdateTime},</if>
+      <if test="carinfo.carDoenLoadBgImg != null">car_cDOENLOAD_BG_IMG = #{carinfo.carDoenLoadBgImg},</if>
+      <if test="carinfo.carDoenLoadSpeak != null">car_cDOENLOAD_SPEAK = #{carinfo.carDoenLoadSpeak}</if>
+    </set>
+    ;
+  </insert>
+  
+   
+  <!--更新车辆登记信息-->
+  <update id="updateCarRegisterInfo" parameterType="CarRegisterInfo">
+    update T_carinfo
+    <set>
+      <if test="carinfo.carName != null">car_cNAME = #{carinfo.carName},</if>
+      <if test="carinfo.carBrand != null">car_cBRAND = #{carinfo.carBrand},</if>
+      <if test="carinfo.carVersion != null">car_cVERSION = #{carinfo.carVersion},</if>
+      <if test="carinfo.carSdkVersion != null">car_cSDK_VERSION = #{carinfo.carSdkVersion},</if>
+      <if test="carinfo.carUpdateTime != null">car_dUPDATATIME = #{carinfo.carUpdateTime},</if>
+      <if test="carinfo.carDoenLoadBgImg != null">car_cDOENLOAD_BG_IMG = #{carinfo.carDoenLoadBgImg},</if>
+      <if test="carinfo.carDoenLoadSpeak != null">car_cDOENLOAD_SPEAK = #{carinfo.carDoenLoadSpeak}</if>
+    </set>
+    WHERE car_nID = #{carinfo.carId};
+  </update>
+  
+</mapper>
